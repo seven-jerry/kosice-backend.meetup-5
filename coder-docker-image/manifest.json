@@ -1,0 +1,15 @@
+{
+  "dockerBuild": {
+    "imageOptimizationPolicy": "SkipLayers",
+    "volumes": {
+      "secrets": [
+        {
+          "name": "artifactory-access-token",
+          "mountPaths": [
+            "/tmp/artifactory"
+          ]
+        }
+      ]
+    }
+  }
+}

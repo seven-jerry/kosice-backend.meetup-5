@@ -1,0 +1,53 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:15432/postgre
+    username: postgre
+    password: changeme
+    hikari:
+      connection-timeout: 250
+
+
+management:
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+
+---
+server:
+  spring:
+    lifecycle:
+      timeout-per-shutdown-phase: 55s
+  shutdown: graceful
+# kubernetes config:
+#lifecycle:
+#    preStopCommand: 'sleep 60'
+management:
+  endpoint:
+    health:
+      group:
+        readiness:
+          include: db
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+
+
+
+
+test:
+  property: propValue123
+
+

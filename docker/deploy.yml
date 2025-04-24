@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservice
+  template:
+    metadata:
+      labels:
+        app: microservice
+    spec:
+      volumes:
+      - name: shared-data
+        emptyDir: {}
+      containers:
+        - name: microservice
+          image: microservice
+          imagePullPolicy: Never
+          #image: image-registry.openshift-image-registry.svc:5000/my-namespace/my-microservice-example-build:latest
+          ports:
+            - containerPort: 8080
+            - containerPort: 5005
+          env:
+            - name: JAVA_OPTIONS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+            - name: UNPACK_JAR
+              value: "true"
+          volumeMounts:
+          - name: shared-data
+            mountPath: /tmp/app
+        - name: coder
+          image: coder:latest
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 1000650000
+          ports:
+          - containerPort: 9090
+          resources:
+            requests:
+              cpu: "1"
+              memory: 2028Mi
+            limits:
+              cpu: "2"
+              memory: 2028Mi
+          volumeMounts:
+            - name: shared-data
+              mountPath: /tmp/app
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: microservice-service
+  labels:
+    app: microservice
+spec:
+  selector:
+    app: microservice
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    - name: debug
+      protocol: TCP
+      port: 5005
+      targetPort: 5005
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: microservice-coder-service
+  labels:
+    app: microservice
+spec:
+  selector:
+    app: microservice
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9090
