@@ -1,0 +1,43 @@
+
+###
+GET http://127.0.0.1:8080/actuator/prometheus?includedNames=someErrorCounter
+
+###
+GET http://127.0.0.1:8080/some/thing?id=else
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###
+
+
+GET http://127.0.0.1:8080/actuator/health/liveness
+###
+GET http://127.0.0.1:8080/actuator/health/readiness
